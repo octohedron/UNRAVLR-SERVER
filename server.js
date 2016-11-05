@@ -5,6 +5,7 @@ import { apolloExpress } from 'apollo-server';
 import { UserSchema, userResolvers } from './api/User';
 import { AuthSchema, authResolvers } from './api/Auth';
 import { InstagramApi } from './api/Instagram';
+import { ClarifaiApi } from './api/Clarifai';
 import { makeExecutableSchema } from 'graphql-tools';
 import { graphiqlExpress } from 'apollo-server';
 import { serverConfig, jwtConfig } from './config';
@@ -66,7 +67,7 @@ API.use(jwt({
   }
 // We leave the /auth and the /authql paths as public because that is what we use to get the token
 }).unless({
-  path: ['/auth', '/authql', '/instagram/handle_auth', '/instagram/authorize_user', '/instagram/user']
+  path: ['/auth', '/authql', '/instagram/handle_auth', '/instagram/authorize_user', '/instagram/user', '/clarifai/tags']
 }));
 
 /**
@@ -95,6 +96,13 @@ API.use('/auth', graphiqlExpress({
 }));
 
 /**
+ * Get tags by image url
+ * QueryParams: url={imageUrl}
+ * @type {route}
+ */
+API.get('/clarifai/tags', ClarifaiApi.GetTagsByUrl);
+
+/**
  * Get instagram code for authentication
  * @type {route}
  */
@@ -118,4 +126,3 @@ API.get('/instagram/user', InstagramApi.UserSelf);
 API.listen(serverConfig.port);
 
 console.log('Server listening on port ' + serverConfig.port);
-
